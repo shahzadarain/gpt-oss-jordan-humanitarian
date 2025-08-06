@@ -1,4 +1,93 @@
 model:
-  name: openai/gpt-oss-20b
+  name: "openai/gpt-oss-20b"
+  quantization: true
+  torch_dtype: "bfloat16"
+  device_map: "auto"
+
+lora:
+  r: 16  # LoRA rank
+  alpha: 32  # LoRA alpha
+  dropout: 0.1
+  target_modules: "all-linear"
+  # MoE expert layers for GPT-OSS
+  expert_layers:
+    - "7.mlp.experts.gate_up_proj"
+    - "7.mlp.experts.down_proj"
+    - "15.mlp.experts.gate_up_proj"
+    - "15.mlp.experts.down_proj"
+    - "23.mlp.experts.gate_up_proj"
+    - "23.mlp.experts.down_proj"
+
 training:
+  output_dir: "./outputs/gpt-oss-jordan"
+  num_epochs: 3
   batch_size: 4
+  eval_batch_size: 4
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
+  learning_rate: 2e-4
+  warmup_ratio: 0.03
+  logging_steps: 10
+  save_strategy: "epoch"
+  evaluation_strategy: "epoch"
+  do_eval: true
+  max_length: 2048
+  fp16: false
+  bf16: true
+  optimizer: "adamw_torch"
+  lr_scheduler: "cosine"
+
+data:
+  dataset_path: "./data/processed/jordan_refugee_dataset"
+  hub_dataset: "HuggingFaceH4/Multilingual-Thinking"
+  languages:
+    - "ar"  # Arabic
+    - "en"  # English
+    - "so"  # Somali
+    - "fa"  # Farsi/Dari
+  focus_country: "jordan"
+  
+jordan_context:
+  unhcr_hotline: "064008000"
+  iom_hotline: "065525510"
+  emergency: "911"
+  education_hotline: "0785524924"
+  
+  camps:
+    - name: "Zaatari"
+      population: 80000
+      established: 2012
+      location: "Mafraq"
+    - name: "Azraq"
+      population: 40000
+      established: 2014
+      location: "Zarqa"
+    - name: "Emirati Jordanian"
+      population: 7000
+      established: 2013
+      location: "Mrajeeb Al Fhood"
+  
+  work_sectors:
+    free_permit:
+      - "Agriculture"
+      - "Construction"
+      - "Manufacturing"
+    reduced_fee:
+      - "Food Service"
+      - "Cleaning"
+      - "Retail"
+  
+  services:
+    registration_centers:
+      - "Amman - Khalda"
+      - "Irbid"
+      - "Mafraq"
+      - "Zarqa"
+    
+    hospitals:
+      - name: "Al-Bashir"
+        phone: "065685453"
+      - name: "Princess Basma"
+        phone: "027242621"
+      - name: "Jordan Hospital"
+        phone: "065609080"
