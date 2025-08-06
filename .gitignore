@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+myenv/
+venv/
+*.log
+outputs/
+*.bin
+*.pt
+.env
+.vscode/

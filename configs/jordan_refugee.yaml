@@ -1,0 +1,4 @@
+model:
+  name: openai/gpt-oss-20b
+training:
+  batch_size: 4
